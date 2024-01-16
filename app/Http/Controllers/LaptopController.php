@@ -6,6 +6,9 @@ use App\Models\Laptop;
 use Faker\Extension\CompanyExtension;
 use Illuminate\Http\Request;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
 class LaptopController extends Controller
 {
 
@@ -138,4 +141,58 @@ class LaptopController extends Controller
 
         return redirect('/laptops');
     }
+
+    public function search(Request $request)
+    {
+        /* $codprod  = $request->input('code');
+        $descpro  = $request->input('descrip');
+
+        $fromDate = Carbon::createFromFormat('Y-m-d\TH:i:s', $request->input('fechaCreacion'))->format('Y-m-d H:i:s');
+        $toDate = Carbon::createFromFormat('Y-m-d\TH:i:s', $request->input('fechaActualiza'))->format('Y-m-d H:i:s');
+
+        $query = \DB::table('laptops')
+            ->where('created_at', '>=', $fromDate)
+            ->where('updated_at', '<=', $toDate)
+            ->where('codigo', 'LIKE', '%' . $codprod . '%')
+            ->where('descripcion', 'LIKE', '%' . $descpro . '%')
+            ->get();
+
+        return view('laptop.index', compact('query')); */
+
+    /* $codprod = $request->input('code');
+    $descpro = $request->input('descrip');
+
+    // Obtener las fechas proporcionadas en el formulario
+    $fromDate = Carbon::createFromFormat('Y-m-d\TH:i', $request->input('fechaCreacion'))->format('Y-m-d H:i:s');
+    $toDate = Carbon::createFromFormat('Y-m-d\TH:i', $request->input('fechaActualiza'))->format('Y-m-d H:i:s');
+
+    // Utilizar Eloquent para realizar la consulta en lugar de la consulta de constructor de consultas query
+    $laptops = Laptop::where(function ($query) use ($codprod, $descpro) {
+            $query->where('codigo', 'LIKE', '%' . $codprod . '%')
+                ->orWhere('descripcion', 'LIKE', '%' . $descpro . '%');
+        })
+        ->where(function ($query) use ($fromDate, $toDate) {
+            $query->whereBetween('created_at', [$fromDate, $toDate])
+                ->orWhereBetween('updated_at', [$fromDate, $toDate]);
+        })
+        ->get();
+
+    // Puedes usar compact('query') para pasar los resultados a la vista
+    return view('laptop.index', compact('laptops')); */ //query
+
+        $codprod = $request->input('code');
+
+        // Utilizar Eloquent para realizar la consulta en lugar de la consulta de constructor de consultas query
+        $laptops = Laptop::where('codigo', 'LIKE', '%' . $codprod . '%')->get();
+
+        // Puedes usar compact('laptops') para pasar los resultados a la vista
+        return view('laptop.index', compact('laptops', 'codprod'));
+    }
+
+    public function limpiarFormulario(Request $request){
+
+        return response()->json(['success'=>true]);
+
+    }
+
 }

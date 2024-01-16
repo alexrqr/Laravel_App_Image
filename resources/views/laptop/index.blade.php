@@ -3,8 +3,37 @@
 @section('title', 'Dashboard | Laptop')
 
 @section('content')
-    <a href="laptops/create" class="btn btn-outline-success mt-3 ml-3 mb-3">Agregar nueva Laptop</a>
-    <button class="btn btn-primary btn-estilo" data-bs-toggle="modal" data-bs-target="#addbtn">Agregar en MODAL</button>
+    {{-- <a href="laptops/create" class="btn btn-outline-success mt-3 ml-3 mb-3">Agregar nueva Laptop</a> --}}
+    <button class="btn btn-primary btn-estilo mt-3" data-bs-toggle="modal" data-bs-target="#addbtn">Agregar en MODAL</button>
+
+    <div class="container rounded-1 bg-light mt-2 mb-2 pt-2 pb-2 justify-content-center shadow form-search">
+        <form action="{{ route('laptops.search') }}" class="form-buscar mt-2 mb-2" method="POST" id="searchForm">
+            @csrf
+            <div class="content-form">
+                <div class="form-group">
+                    <label for="">Codigo</label>
+                    <input type="text" name="code" id="code"> {{-- value="{{ old('code', $codprod) }}" --}}
+                </div>
+                <div class="form-group">
+                    <label for="">Descripcion</label>
+                    <input type="text" name="descrip" id="descrip">
+                </div>
+                <div class="form-group">
+                    <label for="">Fecha alta</label>
+                    <input type="datetime-local" name="fechaCreacion" id="fechaCreacion">
+                </div>
+                <div class="form-group">
+                    <label for="">Fecha edit</label>
+                    <input type="datetime-local" name="fechaActualiza" id="fechaActualiza">
+                </div>
+            </div>
+            <div class="btn-search d-flex">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="button" class="btn btn-secondary" style="margin-left: 10px;" onclick="limpiarFormulario()">Limpiar</button>
+            </div>
+        </form>
+    </div>
+
 
 
     <table id="laptops" class="table table-striped shadow-lg mt-6" width: 100%;>
@@ -16,6 +45,8 @@
                 <th scope="col" style="text-align: center;">DESCRIPCION</th>
                 <th scope="col" style="text-align: center;">IMAGEN</th>
                 <th scope="col" style="text-align: center;">PRECIO</th>
+                <th scope="col" style="text-align: center;">Fecha alta</th>
+                <th scope="col" style="text-align: center;">Fecha edit</th>
                 <th scope="col" style="text-align: center;">ACTION</th>
             </tr>
         </thead>
@@ -33,6 +64,8 @@
                         <img src="/imagen/{{ $data->imagen }}" width="90px" height="90px">
                     </td>
                     <td>{{ $data->precio }}</td>
+                    <td>{{ $data->created_at }}</td>
+                    <td>{{ $data->updated_at }}</td>
                     <td style="text-align: center;">
                         <form action="{{ route('laptops.destroy', $data->id) }}" method="POST" class="formEliminar">
                             <a href="/laptops/{{ $data->id }}/edit"
@@ -54,7 +87,7 @@
 
 
 
-    <!-- Start modal de registro de consulta -->
+    <!-- Start modal de registro de laptop -->
     <div class="modal fade custom-modal-bg" id="addbtn" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -86,7 +119,7 @@
                         {{-- end for view image in time real --}}
                         <div class="mb-3" style="text-align: left;">
                             <label>PRECIO:</label>
-                            <input type="number" name="precio" id="precio" class="form-control" required>
+                            <input type="number" step="0.01" name="precio" id="precio" class="form-control" required>
                         </div>
                         <div class="mb-3" style="text-align: left;">
                             <div class="checkbox clip-check check-primary">
@@ -139,6 +172,31 @@
     </style>
     {{-- Espaciado para el contenido del cuadro de cantidad en datatable --}}
 
+    {{-- Code for form search --}}
+    <style>
+        .form-search form{
+            display: grid;
+            place-items: center;
+        }
+        .form-search form .content-form{
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .form-search form .form-group{
+            padding-left: 10px;
+        }
+        .form-search form input{
+            border-radius: 10px;
+        }
+        .btn-search{
+            display: grid;
+            place-items: center;
+        }
+        .btn-search button{
+            color: black;
+        }
+    </style>
+    {{-- end code search --}}
 @stop
 
 @section('js')
@@ -243,4 +301,31 @@
 
     <!--  Datatables JS-->
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/datatables.min.js"></script>
+
+
+
+    <!-- Codigo Ajax  para limpiar el formulario de busqueda-->
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script>
+        function limpiarFormulario() {
+            // Envía una solicitud Ajax para limpiar el formulario
+            $.ajax({
+                type: "POST", //metodo http de uso
+                url: "{{ route('laptops.limpiarFormulario') }}",
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function () {
+                    $("#code").val('');
+                    window.location.href = "{{ route('laptops.index') }}";
+                    //console.log('Formulario limpiado con éxito');
+                },
+                error: function (error) {
+                    console.error('Error al intentar limpiar el formulario', error);
+                }
+            });
+        }
+    </script>
+
+
 @stop

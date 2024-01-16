@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LaptopController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +22,13 @@ Route::get('/', function () {
 Route::resource('/laptops', 'App\Http\Controllers\LaptopController' );
 
 Route::resource('/productos', 'App\Http\Controllers\ProductosController' );
+
+
+/* Ruta para el metodo search: */
+Route::post('/laptops/search', [LaptopController::class, 'search'])->name('laptops.search');
+Route::post('/laptops/limpiar', [LaptopController::class, 'limpiarFormulario'])->name('laptops.limpiarFormulario');
+
+
 
 Route::middleware([
     'auth:sanctum',
